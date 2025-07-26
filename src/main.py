@@ -273,6 +273,6 @@ required_features = ["font_size", "x0", "y0", "bold", "uppercase_ratio", "length
 df_new["predicted"] = model.predict(df_new[required_features])
 
 # 💾 Save to JSON
-output_json = "predicted_labels_output.json"
+output_json = "output/predicted_labels_output.json"
 df_new.to_json(output_json, orient="records", indent=2)
 print(f"✅ Predicted labels saved to: {output_json}")
