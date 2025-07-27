@@ -186,6 +186,27 @@ def predict_pdf(pdf_path):
     doc.close()
     return pd.DataFrame(data)
 
+def create_structured_output(df):
+    """Create hierarchical JSON structure with title and outline"""
+    # Find title
+    title_rows = df[df["predicted"] == "TITLE"]
+    title = title_rows.iloc[0]["text"] if not title_rows.empty else "Untitled Document"
+    
+    # Create outline from headings and content
+    outline = []
+    for _, row in df.iterrows():
+        if row["predicted"] != "TITLE":  # Exclude title from outline
+            outline.append({
+                "page": int(row["page"]),
+                "text": row["text"],
+                "label": row["predicted"]
+            })
+    
+    return {
+        "title": title,
+        "outline": outline
+    }
+
 # Docker-friendly PDF processing
 def process_input_folder():
     input_dir = "/app/input"
@@ -222,13 +243,15 @@ def process_input_folder():
                     df_new.loc[titles.index, "predicted"] = "H1"
                     df_new.loc[max_idx, "predicted"] = "TITLE"
                 
+                # Create structured output
+                structured_output = create_structured_output(df_new)
+                
                 # Save output
                 os.makedirs(output_dir, exist_ok=True)
                 output_file = os.path.join(output_dir, f"{os.path.splitext(pdf_file)[0]}_labels.json")
-                output = df_new[["page", "text", "predicted"]].rename(columns={"predicted": "label"})
                 
                 with open(output_file, 'w', encoding='utf-8') as f:
-                    json.dump(output.to_dict("records"), f, indent=2, ensure_ascii=False)
+                    json.dump(structured_output, f, indent=2, ensure_ascii=False)
                 
                 print(f"✅ {pdf_file}: {len(df_new)} items. Labels: {dict(df_new['predicted'].value_counts())}")
                 print(f"✅ Output: {output_file}")
@@ -259,10 +282,12 @@ else:
                     df_new.loc[titles.index, "predicted"] = "H1"
                     df_new.loc[max_idx, "predicted"] = "TITLE"
                 
+                # Create structured output
+                structured_output = create_structured_output(df_new)
+                
                 os.makedirs("output", exist_ok=True)
-                output = df_new[["page", "text", "predicted"]].rename(columns={"predicted": "label"})
                 with open("output/predicted_labels_output.json", 'w', encoding='utf-8') as f:
-                    json.dump(output.to_dict("records"), f, indent=2, ensure_ascii=False)
+                    json.dump(structured_output, f, indent=2, ensure_ascii=False)
                 
                 print(f"✅ Processed {len(df_new)} items. Labels: {dict(df_new['predicted'].value_counts())}")
                 print(f"✅ Saved to: {os.path.abspath('output/predicted_labels_output.json')}")
