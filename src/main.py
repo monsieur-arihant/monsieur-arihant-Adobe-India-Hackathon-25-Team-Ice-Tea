@@ -279,3 +279,8 @@ os.makedirs("output", exist_ok=True)
 output_json = "output/predicted_labels_output.json"
 df_new.to_json(output_json, orient="records", indent=2)
 print(f"✅ Predicted labels saved to: {output_json}")
+full_path = os.path.abspath(output_json)
+print("✅ File saved at:", full_path)
+
+# Confirm if exists
+print("Exists?", os.path.exists(full_path))
