@@ -222,9 +222,6 @@ def process_input_folder():
         print("❌ No PDF files found in input directory")
         return
     
-    if 'model' not in locals():
-        print("❌ Model not trained. Check dataset processing.")
-        return
     
     for pdf_file in pdf_files:
         pdf_path = os.path.join(input_dir, pdf_file)
