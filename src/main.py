@@ -269,7 +269,7 @@ else:
     # Interactive mode
     try:
         pdf_path = input("Enter PDF location: ")
-        if os.path.exists(pdf_path) and 'model' in locals():
+        if os.path.exists(pdf_path) and model is not None:
             df_new = predict_pdf(pdf_path)
             if not df_new.empty:
                 features = ["font_size", "x0", "y0", "bold", "uppercase_ratio", "length"]
