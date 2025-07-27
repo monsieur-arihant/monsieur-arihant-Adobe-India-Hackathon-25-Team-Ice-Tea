@@ -272,6 +272,9 @@ df_new = extract_features_from_pdf(external_pdf_path)
 required_features = ["font_size", "x0", "y0", "bold", "uppercase_ratio", "length"]
 df_new["predicted"] = model.predict(df_new[required_features])
 
+print(df_new.head())
+# making sure ouput file exists
+os.makedirs("output", exist_ok=True)
 # 💾 Save to JSON
 output_json = "output/predicted_labels_output.json"
 df_new.to_json(output_json, orient="records", indent=2)
