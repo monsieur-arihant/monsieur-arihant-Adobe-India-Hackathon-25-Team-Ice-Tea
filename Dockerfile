@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir --index-url https://pypi.org/simple/ -r requireme
 RUN mkdir -p /app/pdf_dataset /app/input /app/output
 
 # Copy the main application
-COPY main.py .
+COPY . .
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
@@ -32,4 +32,4 @@ ENV PYTHONDONTWRITEBYTECODE=1
 VOLUME ["/app/input", "/app/output"]
 
 # Default command
-CMD ["python", "main.py"]
+CMD ["python", "src/main.py"]
