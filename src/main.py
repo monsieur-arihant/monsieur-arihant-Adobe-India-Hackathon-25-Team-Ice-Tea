@@ -174,7 +174,7 @@ def label_row(row):
 df["label"] = df.apply(label_row, axis=1)
 
 
-df.to_csv("pdf_dataset/heading_labels_enhanced.csv", index=False)
+df.to_csv("pdf_dataset/heading_labels_enhanced.csv", index=False, escapechar='\\')
 print("Cleaned & labeled output saved to: pdf_dataset/heading_labels_enhanced.csv.csv")
 
 
