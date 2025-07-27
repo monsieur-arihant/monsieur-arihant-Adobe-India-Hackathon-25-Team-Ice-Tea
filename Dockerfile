@@ -1,5 +1,5 @@
-# Use Python 3.9 slim image for smaller size
-FROM python:3.9-slim
+# Alternative base image
+FROM python:3.9
 
 # Set working directory
 WORKDIR /app
@@ -8,13 +8,15 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
+    ca-certificates \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies with specific index
+RUN pip install --no-cache-dir --index-url https://pypi.org/simple/ -r requirements.txt
 
 # Create necessary directories
 RUN mkdir -p /app/pdf_dataset /app/input /app/output
@@ -28,9 +30,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 # Create volumes for input and output
 VOLUME ["/app/input", "/app/output"]
-
-# Expose port (if needed for future web interface)
-EXPOSE 8000
 
 # Default command
 CMD ["python", "main.py"]
