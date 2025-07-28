@@ -1,34 +1,31 @@
-FROM python:3.9
+# Use Python 3.9 slim for smaller image
+FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc g++ && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Copy requirements and install Python packages
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies with specific index
-RUN pip install --no-cache-dir --index-url https://pypi.org/simple/ -r requirements.txt
-
-# Create necessary directories
-RUN mkdir -p /app/pdf_dataset /app/input /app/output
-
-# Copy the main application
+# Copy source code from src folder
 COPY . .
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# Create directories
+RUN mkdir -p /app/input /app/output /app/pdf_dataset
 
-# Create volumes for input and output
+# Create non-root user
+RUN useradd -m -u 1000 pdfuser && chown -R pdfuser:pdfuser /app
+USER pdfuser
+
+# Set environment
+ENV PYTHONUNBUFFERED=1
+
+# Mount points
 VOLUME ["/app/input", "/app/output"]
 
-# Default command
+# Run the application
 CMD ["python", "src/main.py"]
