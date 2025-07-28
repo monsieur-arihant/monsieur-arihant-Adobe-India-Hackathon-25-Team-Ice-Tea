@@ -291,7 +291,8 @@ class DocumentAnalyst:
         
         print("🔄 Classifying headings...")
         # Classify headings
-        df = self.classifier.train(df)
+        self.classifier.train(df)
+        df = self.classifier.predict(df)
         
         print("🔄 Analyzing relevance...")
         # Analyze relevance
